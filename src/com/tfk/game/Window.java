@@ -13,7 +13,7 @@ public class Window extends Canvas {
 	public static Rectangle bounds = new Rectangle(0,0,width,height);
 	public Window(String title, Game game) {
 		JFrame frame = new JFrame(title);
-		frame.setSize(new Dimension(width, height));
+		frame.setSize(new Dimension(width, height + 35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);

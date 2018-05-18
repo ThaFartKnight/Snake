@@ -15,12 +15,14 @@ public class Game extends Canvas implements Runnable{
 	private Direction newDirection = Direction.RIGHT;
 	
 	private static Thread thread;
-	private LinkedList<Snake> snake = new LinkedList<Snake>();
-	private Apple apple;
+	protected LinkedList<Snake> snake = new LinkedList<Snake>();
+	protected Apple apple;
 	
 	private int score = 0;
-	private int cellWidth = GameObject.width, cellHeight = GameObject.height;
-	private Random r = new Random();
+	public static int gridWidth = Window.width / GameObject.width;
+
+	public static int gridHeight = Window.height / GameObject.height;
+	public Random r = new Random();
 	
 	private boolean alive = true;
 	private static Boolean running = false;
@@ -31,7 +33,7 @@ public class Game extends Canvas implements Runnable{
 		new Window("snek", this);
 		addKeyListener(new Input(this));
 		snake.add(new Snake(0,0, Direction.RIGHT));
-		apple = new Apple(r.nextInt(cellWidth - 1)*GameObject.width, r.nextInt(cellHeight - 1)*GameObject.height);
+		apple = new Apple(300, 300);
 		Start();
 	}
 	public synchronized void Start() {
@@ -76,7 +78,7 @@ public class Game extends Canvas implements Runnable{
 		snake = new LinkedList<Snake>();
 		newDirection = Direction.RIGHT;
 		snake.add(new Snake(0, 0, Direction.RIGHT));
-		apple = new Apple(r.nextInt(cellWidth - 1)*GameObject.width, r.nextInt(cellHeight - 1)*GameObject.height);
+		apple = new Apple(r.nextInt(gridWidth - 1)*GameObject.width, r.nextInt(gridHeight - 1)*GameObject.height);
 		alive = true;
 	}
 	private void tick() {
@@ -95,7 +97,7 @@ public class Game extends Canvas implements Runnable{
 	}
 	public void run() {
 		long lastTime = System.nanoTime();
-	    double amountofTicks = 3.0;
+	    double amountofTicks = 4.0;
 	    double ns = 1000000000 / amountofTicks;
 	    double delta = 0;
 	    long timer = System.currentTimeMillis();
@@ -124,18 +126,18 @@ public class Game extends Canvas implements Runnable{
 				switch(snake.get(i).getDirection()) {
 				case UP:
 					x = snake.get(i).getX();
-					y = snake.get(i).getY() - cellHeight;
+					y = snake.get(i).getY() - GameObject.height;
 					break;
 				case DOWN:
 					x = snake.get(i).getX();
-					y = snake.get(i).getY() + cellHeight;
+					y = snake.get(i).getY() + GameObject.height;
 					break;
 				case LEFT:
-					x = snake.get(i).getX() - cellWidth;
+					x = snake.get(i).getX() - GameObject.width;
 					y = snake.get(i).getY();
 					break;
 				case RIGHT:
-					x = snake.get(i).getX() + cellWidth;
+					x = snake.get(i).getX() + GameObject.width;
 					y = snake.get(i).getY();
 					break;
 				}
@@ -150,7 +152,6 @@ public class Game extends Canvas implements Runnable{
 			if(ate && i + 1 == snake.size()) {
 				newList.add(new Snake(snake.getLast()));
 				ate = false;
-				System.out.println(snake.size());
 			}
 		}
 		snake = newList;
@@ -159,21 +160,7 @@ public class Game extends Canvas implements Runnable{
 		// TODO Auto-generated method stub
 		if(snake.get(0).getBounds().intersects(apple.getBounds())) {
 			score++;
-			boolean validX = true, validY = true;
-			int nextX = r.nextInt(cellWidth - 1), nextY = r.nextInt(cellHeight - 1);
-			do {
-				for(int i = 0; i < snake.size(); i++) {
-					if(nextX == snake.get(i).getX()) {
-						validX = false;
-						nextX = r.nextInt(cellWidth - 1);
-					}
-					if(nextY == snake.get(i).getY()) {
-						validY = false;
-						nextY = r.nextInt(cellHeight - 1);
-					}
-				}
-			}while(!validX || !validY);
-			apple = new Apple(nextX*GameObject.width, nextY*GameObject.height);
+			apple.respawn(this);
 			ate = true;
 		}
 		if(snake.size() > 2) {

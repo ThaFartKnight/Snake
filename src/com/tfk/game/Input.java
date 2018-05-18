@@ -19,6 +19,9 @@ public class Input extends KeyAdapter {
 				game.setDirection(Direction.DOWN);
 			}else if(e.getKeyCode() == KeyEvent.VK_LEFT && d != Direction.RIGHT) {
 				game.setDirection(Direction.LEFT);
+			}else if(e.getKeyCode() == KeyEvent.VK_B) {
+				game.apple.respawn(game);
+				System.out.println(game.apple.getX() + " : " + game.apple.getY());
 			}
 		}
 	}
